@@ -8,10 +8,10 @@ See [`src/random-sentences.coffee`](src/random-sentences.coffee) for full docume
 
 In hubot project repo, run:
 
-`npm install random-sentences --save`
+`npm install hubot-random-sentences --save`
 
-Then add **random-sentences** to your `external-scripts.json`:
+Then add **hubot-random-sentences** to your `external-scripts.json`:
 
 ```json
-["random-sentences"]
+["hubot-random-sentences"]
 ```
