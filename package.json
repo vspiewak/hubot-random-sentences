@@ -1,7 +1,7 @@
 {
   "name": "hubot-random-sentences",
   "description": "A hubot script that send random sentences",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "vspiewak",
   "license": "MIT",
   "keywords": [
