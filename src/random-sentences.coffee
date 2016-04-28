@@ -22,6 +22,7 @@ random = (items) ->
 
 module.exports = (robot) ->
   robot.brain.on 'loaded', =>
+    robot.logger.info 'random-sentences loaded'
     tryRandomSentence(robot)
 
   tryRandomSentence = (robot) ->
