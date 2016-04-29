@@ -3,6 +3,7 @@
 #
 # Configuration:
 #   HUBOT_RANDOM_SENTENCES (default: <some dummy strings>)
+#   HUBOT_RANDOM_SENTENCES_TARGETS (default: <some users>)
 #   HUBOT_RANDOM_SENTENCES_ROOM (default: #general)
 #   HUBOT_RANDOM_SENTENCES_FREQUENCY (default: 60 * 60 seconds)
 #   HUBOT_RANDOM_SENTENCES_OPEN_HOUR (default: 9)
@@ -15,8 +16,10 @@
 #   vspiewak
 #
 
-SENTENCES = process.env.HUBOT_RANDOM_SENTENCES || "Hey !|Yo !|What\'s up !|Bro ?|Wazaaaaaa !"
+SENTENCES = process.env.HUBOT_RANDOM_SENTENCES || "Hey <user> !|Yo <user> !|What\'s up <user> !|Bro <user> ?|Wazaaaaaa <user> !"
 SENTENCES_ARRAY = SENTENCES.split '|'
+TARGETS = process.env.HUBOT_RANDOM_SENTENCES_TARGETS || "@vspiewak|@bertrand"
+TARGETS_ARRAY = TARGETS.split '|'
 SENTENCES_ROOM = process.env.HUBOT_RANDOM_SENTENCES_ROOM || '#general'
 SENTENCES_FREQUENCY = process.env.HUBOT_RANDOM_SENTENCES_FREQUENCY || 60 * 60
 SENTENCES_OPEN_HOUR = process.env.HUBOT_RANDOM_SENTENCES_OPEN_HOUR || 9
@@ -39,8 +42,12 @@ module.exports = (robot) ->
     if hour > SENTENCES_OPEN_HOUR and hour < SENTENCES_CLOSE_HOUR
 
       robot.logger.debug 'hubot-random-sentences will talk'
+
+      random_target = random TARGETS_ARRAY
       random_message = random SENTENCES_ARRAY
-      robot.messageRoom SENTENCES_ROOM, random_message
+      final_message = random_message.replace("<user>", random_target)
+
+      robot.messageRoom SENTENCES_ROOM, final_message
 
     else
       robot.logger.debug 'Skip hubot-random-sentences (not in office hours)'
