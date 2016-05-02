@@ -2,12 +2,7 @@
 #   A hubot script that send random sentences
 #
 # Configuration:
-#   HUBOT_RANDOM_SENTENCES (default: <some dummy strings>)
-#   HUBOT_RANDOM_SENTENCES_TARGETS (default: <some users>)
-#   HUBOT_RANDOM_SENTENCES_ROOM (default: #general)
-#   HUBOT_RANDOM_SENTENCES_FREQUENCY (default: 60 * 60 seconds)
-#   HUBOT_RANDOM_SENTENCES_OPEN_HOUR (default: 9)
-#   HUBOT_RANDOM_SENTENCES_CLOSE_HOUR (default: 19)
+#   HUBOT_RANDOM_SENTENCES_FILE
 #
 # Commands:
 #   none
@@ -16,20 +11,32 @@
 #   vspiewak
 #
 
-SENTENCES = process.env.HUBOT_RANDOM_SENTENCES || "Hey <user> !|Yo <user> !|What\'s up <user> !|Bro <user> ?|Wazaaaaaa <user> !"
-SENTENCES_ARRAY = SENTENCES.split '|'
-TARGETS = process.env.HUBOT_RANDOM_SENTENCES_TARGETS || "@vspiewak|@bertrand"
-TARGETS_ARRAY = TARGETS.split '|'
-SENTENCES_ROOM = process.env.HUBOT_RANDOM_SENTENCES_ROOM || '#general'
-SENTENCES_FREQUENCY = process.env.HUBOT_RANDOM_SENTENCES_FREQUENCY || 60 * 60
-SENTENCES_OPEN_HOUR = process.env.HUBOT_RANDOM_SENTENCES_OPEN_HOUR || 9
-SENTENCES_CLOSE_HOUR = process.env.HUBOT_RANDOM_SENTENCES_CLOSE_HOUR || 19
+fs   = require 'fs'
+
+file = process.env.HUBOT_RANDOM_SENTENCES_FILE
+
 
 random = (items) ->
   items[ Math.floor(Math.random() * items.length) ]
 
 module.exports = (robot) ->
   robot.logger.info 'hubot-random-sentences started'
+  unless file?
+    msg.send 'You need to set HUBOT_RANDOM_SENTENCES_FILE'
+  if file
+    try
+      data = fs.readFileSync file, 'utf-8'
+      if data
+        json = JSON.parse(data)
+        targets = json.targets
+        sentences = json.sentences
+        room = json.room
+        frequency = json.frequency
+        openHour = json.openHour
+        closeHour = json.closeHour
+        robot.logger.info 'loaded file'
+    catch error
+      robot.logger.info('Unable to read file', error) unless error.code is 'ENOENT'
 
   # Will execute this every SENTENCES_FREQUENCY seconds
   setInterval () ->
@@ -39,17 +46,18 @@ module.exports = (robot) ->
     hour = new Date().getHours()
 
     # Check if inside office hours
-    if hour > SENTENCES_OPEN_HOUR and hour < SENTENCES_CLOSE_HOUR
+    if hour > openHour and hour < closeHour
 
       robot.logger.debug 'hubot-random-sentences will talk'
 
-      random_target = random TARGETS_ARRAY
-      random_message = random SENTENCES_ARRAY
+      random_target = random targets
+      random_message = random sentences
       final_message = random_message.replace("<user>", random_target)
 
-      robot.messageRoom SENTENCES_ROOM, final_message
+      robot.logger.info 'sentence: ' + final_message
+      robot.messageRoom room, final_message
 
     else
       robot.logger.debug 'Skip hubot-random-sentences (not in office hours)'
 
-  , 1000 * SENTENCES_FREQUENCY
+  , 1000 * frequency
