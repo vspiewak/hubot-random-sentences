@@ -1,0 +1,11 @@
+{
+	"frequency": 1,
+	"openHour": 5,
+	"closeHour": 19,
+	"room": "vspiewak",
+	"targets": [ "@vspiewak", "@another_user" ],
+	"sentences": [
+		"Hey <user> !",
+		"<user> Wazaaa !"
+	]
+}
