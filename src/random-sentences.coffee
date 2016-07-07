@@ -44,9 +44,10 @@ module.exports = (robot) ->
     robot.logger.debug 'Executing hubot-random-sentences'
 
     hour = new Date().getHours()
+    isWeekDay = (new Date().getDay() % 6) != 0
 
-    # Check if inside office hours
-    if hour > openHour and hour < closeHour
+    # Check if inside office hours and not weekend
+    if isWeekDay and hour > openHour and hour < closeHour
 
       robot.logger.debug 'hubot-random-sentences will talk'
 
